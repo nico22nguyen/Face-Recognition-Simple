@@ -68,24 +68,24 @@ def get_avg_faces(show_avg=False):
         cv.waitKey(0)
         cv.destroyAllWindows()
 
-def test_face():
-    TEST_PATH = 'assets/images/test.jpg'
-    test_img = cv.imread(TEST_PATH)
-    test_face = get_face(test_img)
-    test_std = standardize_img(test_face)
-    
-    best_match = None
+def test_faces():
     for face_letter in ['A', 'B', 'C']:
-        avg_face = cv.imread(f'assets/standardized/stdFace{face_letter}.jpg')
-        diff = cv.subtract(test_std, avg_face)
-        error = np.sum(np.abs(diff))
-        if best_match is None or error < best_match[1]:
-            best_match = (face_letter, error)
+        test_img = cv.imread(f'assets/images/test{face_letter}.jpg')
+        test_face = get_face(test_img)
+        test_std = standardize_img(test_face)
+        
+        best_match = None # (letter, error)
+        for other_face_letter in ['A', 'B', 'C']:
+            avg_face = cv.imread(f'assets/standardized/stdFace{other_face_letter}.jpg')
+            diff = cv.subtract(test_std, avg_face)
+            error = np.sum(np.abs(diff))
+            if best_match is None or error < best_match[1]:
+                best_match = (other_face_letter, error)
 
-    print(f'Best match was img {best_match[0]} with error {best_match[1]} [TEST {"PASSED" if best_match[0] == "B" else "FAILED"}]')
+        print(f'Best match was img {best_match[0]} with error {best_match[1]} [TEST {"PASSED" if best_match[0] == face_letter else "FAILED"}]')
         
 ##### MAIN #####
 generate_faces()
 resize_faces()
 get_avg_faces()
-test_face()
+test_faces()
